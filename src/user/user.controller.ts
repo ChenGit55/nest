@@ -15,14 +15,24 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('list')
-  async list(): Promise<User[]> {
-    return this.userService.list();
+  @Post('new')
+  async createUser(
+    @Body() userData: { name: string; email: string; password: string },
+  ) {
+    try {
+      const createdUser = await this.userService.createUser(userData);
+      return { success: true, data: createdUser };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Erro ao criar usuário: ' + error.message,
+      };
+    }
   }
 
-  @Get('list2')
-  findAll(): Promise<User[]> {
-    return this.userService.list();
+  @Get('list')
+  async listUsers(): Promise<User[]> {
+    return this.userService.listUsers();
   }
 
   @Get(':id')

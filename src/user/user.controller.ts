@@ -14,6 +14,7 @@ import { UserService } from './user.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -43,6 +44,7 @@ export class UserController {
     return this.authSerivce.login(req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('list')
   async listUsers(): Promise<User[]> {
     return this.userService.listUsers();

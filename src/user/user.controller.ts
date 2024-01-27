@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
@@ -30,6 +33,12 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard('local'))
+  @Post('login/')
+  async login(@Request() req) {
+    return req.user;
+  }
+
   @Get('list')
   async listUsers(): Promise<User[]> {
     return this.userService.listUsers();
@@ -48,7 +57,7 @@ export class UserController {
     return this.userService.updateUser(id, updatedData);
   }
 
-  @Delete('del/:id')
+  @Delete('delete/:id')
   async delete(@Param('id') id: number): Promise<DeleteResult> {
     return this.userService.deleteUser(id);
   }

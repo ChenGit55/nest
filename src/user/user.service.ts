@@ -15,9 +15,15 @@ export class UserService {
     email: string;
     password: string;
   }): Promise<User> {
-    const user = this.userRepository.create(userData);
-    user.password = await bcrypt.hash(userData.password, 8);
-    return this.userRepository.save(user);
+    try {
+      const user = this.userRepository.create(userData);
+      user.password = await bcrypt.hash(userData.password, 8);
+      console.log(user, '- User creation success!');
+      return this.userRepository.save(user);
+    } catch (error) {
+      console.log(error, '- Failed to create user!');
+      throw error;
+    }
   }
 
   async listUsers(): Promise<User[]> {
@@ -28,14 +34,27 @@ export class UserService {
     return this.userRepository.findOneBy({ id });
   }
 
+  async deleteUser(id: number): Promise<DeleteResult> {
+    return this.userRepository.delete(id);
+  }
+
   async updateUser(
     id: number,
     updatedData: Partial<User>,
   ): Promise<UpdateResult> {
-    return this.userRepository.update(id, updatedData);
+    try {
+      if (updatedData.password) {
+        updatedData.password = await bcrypt.hash(updatedData.password, 8);
+      }
+      console.log('User updated succes!');
+      return this.userRepository.update(id, updatedData);
+    } catch (error) {
+      console.log('Failed to update user!');
+      throw error;
+    }
   }
 
-  async deleteUser(id: number): Promise<DeleteResult> {
-    return this.userRepository.delete(id);
+  async findOne(email: string): Promise<User | undefined> {
+    return this.userRepository.findOneBy({ email: email });
   }
 }

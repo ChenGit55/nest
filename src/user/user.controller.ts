@@ -13,10 +13,14 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private authSerivce: AuthService,
+  ) {}
 
   @Post('new')
   async createUser(
@@ -36,7 +40,7 @@ export class UserController {
   @UseGuards(AuthGuard('local'))
   @Post('login/')
   async login(@Request() req) {
-    return req.user;
+    return this.authSerivce.login(req.user);
   }
 
   @Get('list')

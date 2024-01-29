@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { Token } from './token.entity';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class TokenService {
@@ -39,8 +40,8 @@ export class TokenService {
     let tokenObj = await this.tokenRepository.findOneBy({ hash: oldToken });
 
     if (tokenObj) {
-      let user = this.userService.findOne(tokenObj.user);
-      return this.authService.login(user);
+      let userToken = this.userService.findOne(tokenObj.user);
+      return this.authService.login(userToken);
     } else {
       return new HttpException(
         {
@@ -48,6 +49,16 @@ export class TokenService {
         },
         HttpStatus.UNAUTHORIZED,
       );
+    }
+  }
+
+  async getUserByToken(token: string): Promise<User> {
+    let TokenObj: Token = await this.tokenRepository.findOneBy({ hash: token });
+    if (TokenObj) {
+      let user = await this.userService.findOne(TokenObj.user);
+      return user;
+    } else {
+      return null;
     }
   }
 }

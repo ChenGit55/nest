@@ -39,9 +39,14 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard('local'))
-  @Post('login/')
+  @Post('login')
   async login(@Request() req) {
     return this.authSerivce.login(req.user);
+  }
+
+  @Post('token-login')
+  async tokenLogin(@Request() req, @Body() data) {
+    return this.authSerivce.tokenLogin(data.token);
   }
 
   @UseGuards(JwtAuthGuard)

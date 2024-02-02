@@ -16,10 +16,18 @@ export class UserService {
     password: string;
   }): Promise<User> {
     try {
-      const user = this.userRepository.create(userData);
-      user.password = await bcrypt.hash(userData.password, 8);
-      console.log(user, '- User creation success!');
-      return this.userRepository.save(user);
+      const emailCheck = await this.userRepository.findOneBy({
+        email: userData.email,
+      });
+      if (!emailCheck) {
+        const user = this.userRepository.create(userData);
+        user.password = await bcrypt.hash(userData.password, 8);
+        console.log('- User creation success!');
+        return this.userRepository.save(user);
+      } else {
+        console.log('Email already takken.');
+        throw 'Email already takken.';
+      }
     } catch (error) {
       console.log(error, '- Failed to create user!');
       throw error;

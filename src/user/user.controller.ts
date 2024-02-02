@@ -49,7 +49,7 @@ export class UserController {
     return this.authSerivce.tokenLogin(data.token);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('list')
   async listUsers(): Promise<User[]> {
     return this.userService.listUsers();

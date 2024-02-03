@@ -6,8 +6,8 @@ export class Token {
   id: number;
 
   @Column()
-  hash: string;
+  user: string;
 
   @Column()
-  user: string;
+  hash: string;
 }

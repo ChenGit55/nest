@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -37,13 +38,16 @@ export class TokenService {
   }
 
   async refreshToken(oldToken: string) {
+    if (!oldToken) {
+      throw new BadRequestException('Token is needed');
+    }
     let tokenObj = await this.tokenRepository.findOneBy({ hash: oldToken });
-
+    console.log(tokenObj);
     if (tokenObj) {
-      let userToken = this.userService.findOne(tokenObj.user);
+      let userToken = await this.userService.findOne(tokenObj.user);
       return this.authService.login(userToken);
     } else {
-      return new HttpException(
+      throw new HttpException(
         {
           error: 'INVALID TOKEN!!',
         },
@@ -53,12 +57,15 @@ export class TokenService {
   }
 
   async getUserByToken(token: string): Promise<User> {
+    if (!token) {
+      throw new BadRequestException('Token invalid');
+    }
     let TokenObj: Token = await this.tokenRepository.findOneBy({ hash: token });
     if (TokenObj) {
       let user = await this.userService.findOne(TokenObj.user);
       return user;
     } else {
-      return null;
+      throw new BadRequestException('Token invalid');
     }
   }
 }

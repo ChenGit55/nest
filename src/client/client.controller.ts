@@ -1,8 +1,16 @@
-import { Body, Controller, Delete, Param, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { Client } from './client.entity';
 import { Get, Post } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller('client')
 export class ClientController {
@@ -16,6 +24,7 @@ export class ClientController {
     return { success: true, data: createdClient };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('list')
   async listClients(): Promise<Client[]> {
     return this.clientService.listClients();

@@ -42,7 +42,6 @@ export class TokenService {
       throw new BadRequestException('Token is needed');
     }
     let tokenObj = await this.tokenRepository.findOneBy({ hash: oldToken });
-    console.log(tokenObj);
     if (tokenObj) {
       let userToken = await this.userService.findOne(tokenObj.user);
       return this.authService.login(userToken);
@@ -57,15 +56,13 @@ export class TokenService {
   }
 
   async getUserByToken(token: string): Promise<User> {
-    if (!token) {
-      throw new BadRequestException('Token invalid');
-    }
+    token = token.replace('Bearer ', '').trim();
     let TokenObj: Token = await this.tokenRepository.findOneBy({ hash: token });
     if (TokenObj) {
       let user = await this.userService.findOne(TokenObj.user);
       return user;
     } else {
-      throw new BadRequestException('Token invalid');
+      return null;
     }
   }
 }

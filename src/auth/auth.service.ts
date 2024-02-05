@@ -25,6 +25,8 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     this.tokenService.saveToken(user.email, token);
     return {
+      name: user.name,
+      email: user.email,
       access_token: token,
     };
   }
@@ -34,7 +36,7 @@ export class AuthService {
     if (user) {
       return this.login(user);
     } else {
-      new HttpException(
+      return new HttpException(
         {
           error: 'INVALID TOKEN!!',
         },
